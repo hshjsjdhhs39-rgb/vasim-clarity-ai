@@ -1,11 +1,20 @@
 import { GoogleGenAI } from "@google/genai";
 import { MindMapNode, NodeType, StreamedData, TranscriptData } from '../types';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
-}
+// Lazily initialize the AI instance to avoid crashing the app on load
+// if the API key is not set.
+let ai: GoogleGenAI | null = null;
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+function getAiInstance(): GoogleGenAI {
+    if (!ai) {
+        if (!process.env.API_KEY) {
+            // This error will be caught by the UI and displayed to the user.
+            throw new Error("API_KEY is not configured. Please ensure it is set in the environment variables.");
+        }
+        ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    }
+    return ai;
+}
 
 // دالة لمعالجة وتنظيف كائن العقدة المستلم لضمان سلامة البيانات
 const sanitizeNode = (parsedJson: any): MindMapNode | null => {
@@ -78,7 +87,8 @@ export async function* generateMindMapDataStream(text: string): AsyncGenerator<S
     `;
 
     try {
-        const responseStream = await ai.models.generateContentStream({
+        const geminiAI = getAiInstance();
+        const responseStream = await geminiAI.models.generateContentStream({
             model: "gemini-2.5-flash",
             contents: prompt + `\n\n**Input Text:**\n---\n${text}\n---`,
         });
@@ -135,7 +145,7 @@ export async function* generateMindMapDataStream(text: string): AsyncGenerator<S
 
     } catch (error) {
         console.error("Error calling Gemini API:", error);
-        throw new Error("Failed to generate mind map. The model may be unable to process this input.");
+        throw error; // Propagate error to be handled by the UI
     }
 };
 
@@ -159,13 +169,14 @@ export async function chatWithMindMap(question: string, mindMapJson: string): Pr
     `;
 
     try {
-        const response = await ai.models.generateContent({
+        const geminiAI = getAiInstance();
+        const response = await geminiAI.models.generateContent({
             model: "gemini-2.5-flash",
             contents: prompt,
         });
         return response.text;
     } catch (error) {
         console.error("Error in chatWithMindMap:", error);
-        throw new Error("The AI is currently unable to respond. Please try again later.");
+        throw error; // Propagate error to be handled by the UI
     }
 }
