@@ -1,17 +1,28 @@
 import { GoogleGenAI } from "@google/genai";
 import { MindMapNode, NodeType, StreamedData, TranscriptData } from '../types';
 
-// Lazily initialize the AI instance to avoid crashing the app on load
-// if the API key is not set.
 let ai: GoogleGenAI | null = null;
+let initializationError: string | null = null;
+
+// Eagerly initialize the AI instance on module load.
+// This helps catch configuration issues early without crashing the entire app.
+try {
+    // Per instructions, we must assume 'process.env.API_KEY' is available.
+    // The constructor will throw an error if the key is missing or invalid, which we catch.
+    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+} catch (error) {
+    const message = error instanceof Error ? error.message : "An unknown error occurred during initialization.";
+    console.error("Error initializing Gemini API:", message);
+    // Set a user-friendly error message to be displayed in the UI.
+    initializationError = "Could not initialize the AI service. Please ensure the API Key is configured correctly in the application's environment settings.";
+}
 
 function getAiInstance(): GoogleGenAI {
-    if (!ai) {
-        // Per instructions, we must assume 'process.env.API_KEY' is available
-        // in the execution environment and not perform a check that would throw an error.
-        ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    if (initializationError) {
+        throw new Error(initializationError);
     }
-    return ai;
+    // If initialization succeeded, `ai` is guaranteed to be non-null.
+    return ai!;
 }
 
 // دالة لمعالجة وتنظيف كائن العقدة المستلم لضمان سلامة البيانات
