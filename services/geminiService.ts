@@ -7,10 +7,8 @@ let ai: GoogleGenAI | null = null;
 
 function getAiInstance(): GoogleGenAI {
     if (!ai) {
-        if (!process.env.API_KEY) {
-            // This error will be caught by the UI and displayed to the user.
-            throw new Error("API_KEY is not configured. Please ensure it is set in the environment variables.");
-        }
+        // Per instructions, we must assume 'process.env.API_KEY' is available
+        // in the execution environment and not perform a check that would throw an error.
         ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     }
     return ai;
