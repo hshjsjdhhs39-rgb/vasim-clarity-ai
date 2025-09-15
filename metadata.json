@@ -1,0 +1,5 @@
+{
+  "name": "Vasim Clarity AI",
+  "description": "An AI-powered application that transforms unstructured data (text, files, links) into structured, interactive mind maps and presentations using the Gemini API for advanced analysis and visualization.",
+  "requestFramePermissions": []
+}
