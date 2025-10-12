@@ -1,0 +1,7 @@
+{
+  "name": "@google/genai",
+  "version": "0.0.0-stub",
+  "main": "index.js",
+  "module": "index.js",
+  "type": "module"
+}

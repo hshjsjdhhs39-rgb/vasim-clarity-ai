@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 220 16% 10%;
+  --foreground: 0 0% 98%;
+  --primary: 262 83% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 215 20% 25%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 220 16% 18%;
+  --muted-foreground: 0 0% 70%;
+  --accent: 160 84% 39%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 220 16% 25%;
+  --input: 220 16% 23%;
+  --ring: 262 83% 58%;
+  --radius: 0.75rem;
+}
+
+body {
+  @apply bg-background text-foreground font-sans min-h-screen;
+}
+
+canvas {
+  touch-action: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
